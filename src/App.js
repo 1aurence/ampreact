@@ -1,25 +1,59 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import ItemFormComponent from "./Components/ItemFormComponent";
+import "./App.css";
+const axios = require("axios");
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+const uri = "http://localhost:4000/item";
+
+class App extends Component {
+  state = {
+    items: [],
+  };
+  componentDidMount() {
+    this.getItems();
+  }
+  getItems() {
+    axios
+      .get(uri)
+      .then((response) => {
+        console.log(response.data.items);
+        this.setState({ items: response.data.items });
+      })
+      .catch((err) => console.log(err));
+  }
+  deleteItem(itemId) {
+    console.log(`${uri}/${itemId}`);
+    axios
+      .delete(`${uri}/${itemId}`)
+      .then((response) => console.log(response))
+      .catch((err) => console.log(err));
+  }
+  render() {
+    const items = this.state.items.map((item, index) => (
+      <li className="list-group-item" key={item.itemId}>
+        <h4>{item.title}</h4>
+        <button
+          className="btn btn-sm btn-danger"
+          onClick={() => this.deleteItem(item.itemId)}
         >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+          Delete
+        </button>
+      </li>
+    ));
+
+    if (items.length == 0) {
+      return <h3>No Items Found</h3>;
+      <ItemFormComponent />;
+    } else {
+      return (
+        <div className="container">
+          <ItemFormComponent getItems={this.getItems} />
+          <h2>Hello</h2>
+          <ul className="list-group">{items}</ul>
+        </div>
+      );
+    }
+  }
 }
 
 export default App;
