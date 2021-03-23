@@ -12,22 +12,22 @@ class App extends Component {
   componentDidMount() {
     this.getItems();
   }
-  getItems() {
+  getItems = () => {
+    console.log("get items called");
     axios
       .get(uri)
       .then((response) => {
-        console.log(response.data.items);
         this.setState({ items: response.data.items });
       })
       .catch((err) => console.log(err));
-  }
-  deleteItem(itemId) {
+  };
+  deleteItem = (itemId) => {
     console.log(`${uri}/${itemId}`);
     axios
       .delete(`${uri}/${itemId}`)
-      .then((response) => console.log(response))
+      .then((response) => this.getItems())
       .catch((err) => console.log(err));
-  }
+  };
   render() {
     const items = this.state.items.map((item, index) => (
       <li className="list-group-item" key={item.itemId}>
@@ -42,8 +42,12 @@ class App extends Component {
     ));
 
     if (items.length == 0) {
-      return <h3>No Items Found</h3>;
-      <ItemFormComponent />;
+      return (
+        <div className="container">
+          <ItemFormComponent />
+          <h3>No Items </h3>
+        </div>
+      );
     } else {
       return (
         <div className="container">
